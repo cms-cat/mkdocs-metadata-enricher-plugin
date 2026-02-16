@@ -1,11 +1,12 @@
 """MkDocs Metadata Enricher Plugin."""
 
+from __future__ import annotations
+
 import json
 import logging
 import os
 import subprocess
 from datetime import datetime
-from typing import Optional
 from zoneinfo import ZoneInfo
 
 from babel.dates import format_date
@@ -160,10 +161,10 @@ class MetadataEnricherPlugin(BasePlugin):
                 f"MetadataEnricher: Added dates to {modified_count} entries " "in search_index.json"
             )
 
-        except Exception as e:
+        except (json.JSONDecodeError, KeyError, OSError) as e:
             log.error(f"MetadataEnricher: Failed to process search index: {e}")
 
-    def _get_git_datetime(self, filepath: str) -> Optional[datetime]:
+    def _get_git_datetime(self, filepath: str) -> datetime | None:
         """
         Extract git commit datetime for a file.
 
@@ -195,11 +196,11 @@ class MetadataEnricherPlugin(BasePlugin):
                 return dt
 
             return None
-        except Exception as e:
+        except (subprocess.CalledProcessError, OSError, ValueError) as e:
             log.debug(f"MetadataEnricher: Error getting git date for {filepath}: {e}")
             return None
 
-    def _get_formatted_date(self, filepath: str) -> Optional[str]:
+    def _get_formatted_date(self, filepath: str) -> str | None:
         """
         Get formatted git date for search index based on config.
 
@@ -217,7 +218,7 @@ class MetadataEnricherPlugin(BasePlugin):
 
         return self._format_datetime(dt)
 
-    def _format_datetime(self, dt: datetime) -> Optional[str]:
+    def _format_datetime(self, dt: datetime) -> str | None:
         """
         Format a datetime according to plugin config.
 
@@ -259,6 +260,6 @@ class MetadataEnricherPlugin(BasePlugin):
 
             return None
 
-        except Exception as e:
+        except (KeyError, ValueError) as e:
             log.error(f"MetadataEnricher: Error formatting date: {e}")
             return None

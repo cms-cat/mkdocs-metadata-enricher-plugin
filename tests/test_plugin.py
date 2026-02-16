@@ -2,6 +2,7 @@
 
 import json
 import os
+import subprocess
 from datetime import datetime
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
@@ -111,7 +112,7 @@ class TestGitDateExtraction:
         """Test handling of git error."""
         filepath = os.path.join(docs_dir, "index.md")
 
-        with patch("subprocess.check_output", side_effect=Exception("git error")):
+        with patch("subprocess.check_output", side_effect=subprocess.CalledProcessError(1, "git")):
             result = plugin._get_git_datetime(filepath)
 
             assert result is None
