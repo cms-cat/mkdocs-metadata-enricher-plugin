@@ -64,6 +64,22 @@ class TestSitemapEnrichment:
 
         assert mock_page.update_date == "2021-04-27"
 
+    def test_on_page_context_with_only_git_datetime(self, plugin, mock_page):
+        """Test sitemap enrichment when only git_datetime is available (not git_date).
+
+        This scenario can occur when the upstream git-revision-date-localized-plugin
+        only provides raw_iso_datetime. The fix ensures raw_date is checked consistently.
+        """
+        # Only provide git_datetime, not git_date
+        mock_page.meta["git_revision_date_localized_raw_iso_datetime"] = "2021-04-27 13:11:28"
+        # Ensure git_date is not provided
+        mock_page.meta["git_revision_date_localized_raw_iso_date"] = None
+
+        plugin.on_page_context({}, mock_page, {}, None)
+
+        # Should still enrich sitemap even though only git_datetime was provided
+        assert mock_page.update_date == "2021-04-27"
+
     def test_on_page_context_without_git_date(self, plugin, mock_page):
         """Test that page.update_date is not changed if no git date."""
         original_date = None
