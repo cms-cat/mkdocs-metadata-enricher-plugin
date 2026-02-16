@@ -13,9 +13,6 @@ import pytest
 class TestIntegration:
     """Integration tests with actual mkdocs build."""
 
-    @pytest.mark.skip(
-        reason="Requires complex git setup in temp directory. Unit tests cover core functionality."
-    )
     def test_basic_mkdocs_build(self):
         """Test plugin with a minimal mkdocs build."""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -75,6 +72,7 @@ This is the about page.
             mkdocs_yml = os.path.join(tmpdir, "mkdocs.yml")
             Path(mkdocs_yml).write_text(
                 """site_name: Test Site
+site_url: https://example.com/
 docs_dir: docs
 site_dir: site
 

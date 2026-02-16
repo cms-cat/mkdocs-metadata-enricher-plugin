@@ -264,3 +264,96 @@ class TestSearchIndexEnrichment:
         for doc in index["docs"]:
             assert "last_updated" in doc
             assert doc["last_updated"] == "2021-04-27"
+
+
+@pytest.mark.unit
+class TestEdgeCases:
+    """Test edge cases and error handling."""
+
+    def test_malformed_search_index(self, plugin, mkdocs_config):
+        """Test handling of malformed JSON in search index."""
+        search_index_path = os.path.join(mkdocs_config["site_dir"], "search", "search_index.json")
+        with open(search_index_path, "w") as f:
+            f.write("{invalid json")
+
+        with patch("mkdocs_metadata_enricher_plugin.plugin.log") as mock_log:
+            plugin.on_post_build(mkdocs_config)
+            mock_log.error.assert_called()
+
+    def test_empty_docs_list(self, plugin, mkdocs_config):
+        """Test handling of search index with empty docs list."""
+        search_index_path = os.path.join(mkdocs_config["site_dir"], "search", "search_index.json")
+        with open(search_index_path, "w") as f:
+            json.dump({"docs": [], "config": {}}, f)
+
+        # Should not raise
+        plugin.on_post_build(mkdocs_config)
+
+        with open(search_index_path) as f:
+            index = json.load(f)
+        assert index["docs"] == []
+
+    def test_search_entry_with_anchor_fragment(self, plugin, mkdocs_config):
+        """Test that anchor fragments in locations are stripped."""
+        search_index_path = os.path.join(mkdocs_config["site_dir"], "search", "search_index.json")
+        with open(search_index_path, "w") as f:
+            json.dump(
+                {
+                    "docs": [
+                        {
+                            "location": "/page1/#section-1",
+                            "title": "Section 1",
+                            "text": "Content",
+                        }
+                    ],
+                    "config": {},
+                },
+                f,
+            )
+
+        with patch(
+            "mkdocs_metadata_enricher_plugin.plugin.MetadataEnricherPlugin._get_formatted_date"
+        ) as mock_format:
+            mock_format.return_value = "2021-04-27"
+            plugin.on_post_build(mkdocs_config)
+
+        with open(search_index_path) as f:
+            index = json.load(f)
+        assert index["docs"][0]["last_updated"] == "2021-04-27"
+
+    def test_invalid_timezone(self, plugin, docs_dir):
+        """Test that invalid timezone logs an error."""
+        filepath = os.path.join(docs_dir, "index.md")
+        dt = datetime(2021, 4, 27, 13, 11, 28, tzinfo=ZoneInfo("UTC"))
+
+        plugin.config["search_timezone"] = "Invalid/Timezone"
+
+        with patch("mkdocs_metadata_enricher_plugin.plugin.log") as mock_log:
+            result = plugin._format_datetime(dt)
+            assert result is None
+            mock_log.error.assert_called()
+
+    def test_on_page_context_caches_date(self, plugin, mock_page):
+        """Test that on_page_context populates the date cache."""
+        mock_page.meta["git_revision_date_localized_raw_iso_date"] = "2021-04-27"
+        mock_page.file.src_path = "index.md"
+        mock_page.file.dest_path = "index.html"
+
+        plugin.on_page_context({}, mock_page, {}, None)
+
+        assert "index.md" in plugin._date_cache
+        assert plugin._path_map["index.html"] == "index.md"
+
+    def test_on_page_context_caches_even_when_sitemap_disabled(self, plugin, mock_page):
+        """Test that caching happens even when enrich_sitemap is False."""
+        plugin.config["enrich_sitemap"] = False
+        mock_page.meta["git_revision_date_localized_raw_iso_date"] = "2021-04-27"
+        mock_page.file.src_path = "index.md"
+        mock_page.file.dest_path = "index.html"
+
+        plugin.on_page_context({}, mock_page, {}, None)
+
+        # Caching still happens
+        assert "index.md" in plugin._date_cache
+        # But update_date is not set
+        assert mock_page.update_date is None
