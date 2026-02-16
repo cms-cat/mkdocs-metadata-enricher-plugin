@@ -24,6 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Documentation",
 ]
 dynamic = ["version"]
@@ -90,3 +91,9 @@ markers = [
     "unit: unit tests",
     "integration: integration tests requiring mkdocs build",
 ]
+
+[project.urls]
+Changelog = "https://github.com/cms-cat/mkdocs-metadata-enricher-plugin/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/cms-cat/mkdocs-metadata-enricher-plugin"
+Issues = "https://github.com/cms-cat/mkdocs-metadata-enricher-plugin/issues"
+Repository = "https://github.com/cms-cat/mkdocs-metadata-enricher-plugin"
