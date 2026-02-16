@@ -183,8 +183,8 @@ class MetadataEnricherPlugin(BasePlugin):
             return None
 
         try:
-            # %ci = commit date, ISO 8601 format (includes timezone)
-            cmd = ["git", "log", "-1", "--format=%ci", "--", filepath]
+            # %cI = commit date, strict ISO 8601 format
+            cmd = ["git", "log", "-1", "--format=%cI", "--", filepath]
             result = subprocess.check_output(cmd, stderr=subprocess.DEVNULL).decode("utf-8").strip()
 
             if result:
