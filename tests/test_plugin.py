@@ -90,7 +90,7 @@ class TestGitDateExtraction:
         """Test successful git datetime extraction."""
         filepath = os.path.join(docs_dir, "index.md")
 
-        with patch("subprocess.check_output") as mock_cmd:
+        with patch("mkdocs_metadata_enricher_plugin.plugin.subprocess.check_output") as mock_cmd:
             mock_cmd.return_value = b"2021-04-27 13:11:28 +0000"
 
             dt = plugin._get_git_datetime(filepath)
