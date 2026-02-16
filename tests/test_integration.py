@@ -2,8 +2,10 @@
 
 import json
 import os
+import re
 import subprocess
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -88,9 +90,9 @@ plugins:
 """
             )
 
-            # Run mkdocs build
+            # Run mkdocs build using python -m to ensure it uses the current environment
             result = subprocess.run(
-                ["mkdocs", "build"],
+                ["python", "-m", "mkdocs", "build"],
                 cwd=tmpdir,
                 capture_output=True,
                 text=True,
@@ -115,7 +117,23 @@ plugins:
             sitemap_path = os.path.join(tmpdir, "site", "sitemap.xml")
             assert os.path.exists(sitemap_path), "sitemap.xml not found"
 
-            # Verify sitemap contains lastmod dates
+            # Verify sitemap contains lastmod dates with git dates (YYYY-MM-DD format)
             with open(sitemap_path) as f:
                 sitemap_content = f.read()
-                assert "<lastmod>" in sitemap_content, "No lastmod in sitemap"
+
+            # Extract all <lastmod> tags
+            lastmod_pattern = r"<lastmod>(\d{4}-\d{2}-\d{2})</lastmod>"
+            lastmod_dates = re.findall(lastmod_pattern, sitemap_content)
+
+            assert len(lastmod_dates) > 0, "No lastmod dates found in sitemap"
+
+            # All dates should be valid YYYY-MM-DD format from git commits
+            # (they should be today's date or earlier, given we just created the repo)
+            for date_str in lastmod_dates:
+                try:
+                    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+                    # Verify it's not a future date and not too far in the past
+                    today = datetime.today()
+                    assert date_obj <= today, f"Sitemap date {date_str} is in the future"
+                except ValueError:
+                    pytest.fail(f"Invalid date format in sitemap: {date_str}")
