@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-02-16
+
+### Fixed
+
+- Use raw_date consistently in sitemap enrichment check
+
+### Miscellaneous Tasks
+
+- Enforce conventional commits via pre-commit and PR linter
+
+### Testing
+
+- Fix integration test mkdocs command execution
+- Add unit test for datetime-only metadata scenario
+
 ## [0.2.1] - 2026-02-16
 
 ### Miscellaneous Tasks
