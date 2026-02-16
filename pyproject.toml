@@ -93,7 +93,15 @@ markers = [
 ]
 
 [project.urls]
+Documentation = "https://cms-cat.github.io/mkdocs-metadata-enricher-plugin/"
 Changelog = "https://github.com/cms-cat/mkdocs-metadata-enricher-plugin/blob/main/CHANGELOG.md"
 Homepage = "https://github.com/cms-cat/mkdocs-metadata-enricher-plugin"
 Issues = "https://github.com/cms-cat/mkdocs-metadata-enricher-plugin/issues"
 Repository = "https://github.com/cms-cat/mkdocs-metadata-enricher-plugin"
+
+[dependency-groups]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocs-git-revision-date-localized-plugin>=1.2",
+]

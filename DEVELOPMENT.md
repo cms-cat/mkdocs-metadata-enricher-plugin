@@ -306,7 +306,7 @@ uv sync --all-extras
 
 ## Documentation
 
-User documentation is in [README.md](README.md). This file (DEVELOPMENT.md) covers development setup.
+User documentation is in [README.md](https://github.com/cms-cat/mkdocs-metadata-enricher-plugin/blob/main/README.md). This file (DEVELOPMENT.md) covers development setup.
 
 To improve documentation:
 1. Edit the relevant file
@@ -316,7 +316,7 @@ To improve documentation:
 ## Getting Help
 
 - Check existing [GitHub issues](https://github.com/cms-cat/mkdocs-metadata-enricher-plugin/issues)
-- Read the [README](README.md) for usage examples
+- Read the [README](https://github.com/cms-cat/mkdocs-metadata-enricher-plugin/blob/main/README.md) for usage examples
 - Review test cases in `tests/` for implementation examples
 
 ## Next Steps

@@ -1,0 +1,63 @@
+site_name: mkdocs-metadata-enricher-plugin
+site_description: MkDocs plugin that enriches sitemap.xml and search index with git revision dates
+site_url: https://cms-cat.github.io/mkdocs-metadata-enricher-plugin/
+repo_url: https://github.com/cms-cat/mkdocs-metadata-enricher-plugin
+repo_name: cms-cat/mkdocs-metadata-enricher-plugin
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - content.code.copy
+    - search.highlight
+    - search.suggest
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      type: date
+      enable_creation_date: false
+  - metadata-enricher:
+      enrich_sitemap: true
+      enrich_search: true
+      search_date_type: datetime
+      search_locale: en
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Configuration: configuration.md
+  - How It Works: how-it-works.md
+  - Development: development.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - toc:
+      permalink: true
