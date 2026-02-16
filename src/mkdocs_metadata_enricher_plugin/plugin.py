@@ -98,9 +98,9 @@ class MetadataEnricherPlugin(BasePlugin):
                     f"MetadataEnricher: Could not parse date '{raw_date}' for {page.file.src_path}"
                 )
 
-            if self.config["enrich_sitemap"] and git_date:
+            if self.config["enrich_sitemap"] and raw_date:
                 # Update page.update_date so sitemap uses git date (YYYY-MM-DD only)
-                page.update_date = git_date.split(" ")[0] if " " in git_date else git_date
+                page.update_date = raw_date.split(" ")[0] if " " in raw_date else raw_date
                 log.debug(f"Updated sitemap date for {page.file.src_path}: {page.update_date}")
 
         return context
