@@ -14,7 +14,7 @@ This guide will help you set up a development environment and contribute to the 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/mkdocs-metadata-enricher-plugin.git
+git clone https://github.com/cms-cat/mkdocs-metadata-enricher-plugin.git
 cd mkdocs-metadata-enricher-plugin
 ```
 
@@ -315,7 +315,7 @@ To improve documentation:
 
 ## Getting Help
 
-- Check existing [GitHub issues](https://github.com/yourusername/mkdocs-metadata-enricher-plugin/issues)
+- Check existing [GitHub issues](https://github.com/cms-cat/mkdocs-metadata-enricher-plugin/issues)
 - Read the [README](README.md) for usage examples
 - Review test cases in `tests/` for implementation examples
 
