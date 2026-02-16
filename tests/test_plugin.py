@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 import pytz
 
-from mkdocs_metadata_enricher.plugin import MetadataEnricherPlugin
+from mkdocs_metadata_enricher_plugin.plugin import MetadataEnricherPlugin
 
 
 @pytest.mark.unit
@@ -132,7 +132,7 @@ class TestGitDateExtraction:
 class TestDateFormatting:
     """Test _get_formatted_date method."""
 
-    @patch("mkdocs_metadata_enricher.plugin.MetadataEnricherPlugin._get_git_datetime")
+    @patch("mkdocs_metadata_enricher_plugin.plugin.MetadataEnricherPlugin._get_git_datetime")
     def test_format_iso_date(self, mock_git, plugin, docs_dir):
         """Test iso_date format."""
         filepath = os.path.join(docs_dir, "index.md")
@@ -144,7 +144,7 @@ class TestDateFormatting:
 
         assert result == "2021-04-27"
 
-    @patch("mkdocs_metadata_enricher.plugin.MetadataEnricherPlugin._get_git_datetime")
+    @patch("mkdocs_metadata_enricher_plugin.plugin.MetadataEnricherPlugin._get_git_datetime")
     def test_format_iso_datetime(self, mock_git, plugin, docs_dir):
         """Test iso_datetime format."""
         filepath = os.path.join(docs_dir, "index.md")
@@ -156,7 +156,7 @@ class TestDateFormatting:
 
         assert result == "2021-04-27 13:11:28"
 
-    @patch("mkdocs_metadata_enricher.plugin.MetadataEnricherPlugin._get_git_datetime")
+    @patch("mkdocs_metadata_enricher_plugin.plugin.MetadataEnricherPlugin._get_git_datetime")
     def test_format_custom(self, mock_git, plugin, docs_dir):
         """Test custom format."""
         filepath = os.path.join(docs_dir, "index.md")
@@ -169,7 +169,7 @@ class TestDateFormatting:
 
         assert result == "27/04/2021"
 
-    @patch("mkdocs_metadata_enricher.plugin.MetadataEnricherPlugin._get_git_datetime")
+    @patch("mkdocs_metadata_enricher_plugin.plugin.MetadataEnricherPlugin._get_git_datetime")
     def test_format_date_localized(self, mock_git, plugin, docs_dir):
         """Test date format with localization."""
         filepath = os.path.join(docs_dir, "index.md")
@@ -182,7 +182,7 @@ class TestDateFormatting:
 
         assert "April" in result or "27" in result
 
-    @patch("mkdocs_metadata_enricher.plugin.MetadataEnricherPlugin._get_git_datetime")
+    @patch("mkdocs_metadata_enricher_plugin.plugin.MetadataEnricherPlugin._get_git_datetime")
     def test_format_datetime_localized(self, mock_git, plugin, docs_dir):
         """Test datetime format with localization."""
         filepath = os.path.join(docs_dir, "index.md")
@@ -195,7 +195,7 @@ class TestDateFormatting:
 
         assert "13:11:28" in result
 
-    @patch("mkdocs_metadata_enricher.plugin.MetadataEnricherPlugin._get_git_datetime")
+    @patch("mkdocs_metadata_enricher_plugin.plugin.MetadataEnricherPlugin._get_git_datetime")
     def test_format_with_timezone_conversion(self, mock_git, plugin, docs_dir):
         """Test date formatting with timezone conversion."""
         filepath = os.path.join(docs_dir, "index.md")
@@ -210,7 +210,7 @@ class TestDateFormatting:
         # Should be converted to local time (UTC+2)
         assert "2021-04-27 04:00:00" in result
 
-    @patch("mkdocs_metadata_enricher.plugin.MetadataEnricherPlugin._get_git_datetime")
+    @patch("mkdocs_metadata_enricher_plugin.plugin.MetadataEnricherPlugin._get_git_datetime")
     def test_format_no_git_date(self, mock_git, plugin, docs_dir):
         """Test handling when no git date is available."""
         filepath = os.path.join(docs_dir, "index.md")
@@ -232,7 +232,7 @@ class TestSearchIndexEnrichment:
         os.remove(search_index_path)
 
         # Should log warning but not raise
-        with patch("mkdocs_metadata_enricher.plugin.log") as mock_log:
+        with patch("mkdocs_metadata_enricher_plugin.plugin.log") as mock_log:
             plugin.on_post_build(mkdocs_config)
             mock_log.warning.assert_called()
 
@@ -248,7 +248,7 @@ class TestSearchIndexEnrichment:
         # Index should be unchanged
         assert original_content == new_content
 
-    @patch("mkdocs_metadata_enricher.plugin.MetadataEnricherPlugin._get_formatted_date")
+    @patch("mkdocs_metadata_enricher_plugin.plugin.MetadataEnricherPlugin._get_formatted_date")
     def test_on_post_build_adds_dates(self, mock_format, plugin, mkdocs_config):
         """Test that dates are added to search index."""
         mock_format.return_value = "2021-04-27"

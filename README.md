@@ -1,7 +1,7 @@
-# mkdocs-metadata-enricher
+# mkdocs-metadata-enricher-plugin
 
-[![PyPI - Version](https://img.shields.io/pypi/v/mkdocs-metadata-enricher)](https://pypi.org/project/mkdocs-metadata-enricher/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mkdocs-metadata-enricher)](https://pypi.org/project/mkdocs-metadata-enricher/)
+[![PyPI - Version](https://img.shields.io/pypi/v/mkdocs-metadata-enricher-plugin)](https://pypi.org/project/mkdocs-metadata-enricher-plugin/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mkdocs-metadata-enricher-plugin)](https://pypi.org/project/mkdocs-metadata-enricher-plugin/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A [MkDocs](https://www.mkdocs.org/) plugin that enriches your **sitemap.xml** and **search index** with git revision dates. It automatically injects the last commit date for each page based on git history, making your sitemap SEO-friendly and search results more informative.
@@ -21,13 +21,13 @@ A [MkDocs](https://www.mkdocs.org/) plugin that enriches your **sitemap.xml** an
 Install the plugin using pip:
 
 ```bash
-pip install mkdocs-metadata-enricher
+pip install mkdocs-metadata-enricher-plugin
 ```
 
 Or with uv:
 
 ```bash
-uv add mkdocs-metadata-enricher
+uv add mkdocs-metadata-enricher-plugin
 ```
 
 ## Quick Start

@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of mkdocs-metadata-enricher plugin
+- Initial release of mkdocs-metadata-enricher-plugin
 - **Sitemap enrichment**: Automatically updates sitemap `<lastmod>` dates with git revision dates
 - **Search index enrichment**: Adds formatted git dates to search result entries
 - **Flexible date formatting**: Support for `date`, `datetime`, `iso_date`, `iso_datetime`, and `custom` formats

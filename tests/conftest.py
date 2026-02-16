@@ -95,7 +95,7 @@ def mock_page():
 @pytest.fixture
 def plugin():
     """Create a metadata enricher plugin instance with initialized config."""
-    from mkdocs_metadata_enricher.plugin import MetadataEnricherPlugin
+    from mkdocs_metadata_enricher_plugin.plugin import MetadataEnricherPlugin
 
     plugin = MetadataEnricherPlugin()
     # Initialize config with defaults

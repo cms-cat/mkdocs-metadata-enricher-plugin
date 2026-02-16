@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mkdocs-metadata-enricher"
+name = "mkdocs-metadata-enricher-plugin"
 description = "MkDocs plugin for enriching sitemap.xml and search index with git revision dates"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -44,10 +44,10 @@ dev = [
 ]
 
 [project.entry-points."mkdocs.plugins"]
-metadata-enricher = "mkdocs_metadata_enricher.plugin:MetadataEnricherPlugin"
+metadata-enricher = "mkdocs_metadata_enricher_plugin.plugin:MetadataEnricherPlugin"
 
 [tool.hatch.version]
-path = "src/mkdocs_metadata_enricher/__init__.py"
+path = "src/mkdocs_metadata_enricher_plugin/__init__.py"
 pattern = '__version__ = "(?P<version>[^"]+)"'
 
 [tool.ruff]
@@ -70,7 +70,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["mkdocs_metadata_enricher"]
+known-first-party = ["mkdocs_metadata_enricher_plugin"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -83,7 +83,7 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
 python_classes = "Test*"
-addopts = "-v --strict-markers --cov=src/mkdocs_metadata_enricher --cov-report=term-missing"
+addopts = "-v --strict-markers --cov=src/mkdocs_metadata_enricher_plugin --cov-report=term-missing"
 minversion = "7.0"
 markers = [
     "unit: unit tests",

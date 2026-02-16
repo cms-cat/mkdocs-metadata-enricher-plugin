@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide will help you set up a development environment and contribute to the mkdocs-metadata-enricher project.
+This guide will help you set up a development environment and contribute to the mkdocs-metadata-enricher-plugin project.
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@ This guide will help you set up a development environment and contribute to the 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/mkdocs-metadata-enricher.git
-cd mkdocs-metadata-enricher
+git clone https://github.com/yourusername/mkdocs-metadata-enricher-plugin.git
+cd mkdocs-metadata-enricher-plugin
 ```
 
 ### 2. Initialize the Development Environment
@@ -117,18 +117,18 @@ uv run pytest -m unit
 uv run pytest -m integration
 
 # With coverage report
-uv run pytest --cov=src/mkdocs_metadata_enricher
+uv run pytest --cov=src/mkdocs_metadata_enricher_plugin
 ```
 
 ## Project Structure
 
 ```
-mkdocs-metadata-enricher/
+mkdocs-metadata-enricher-plugin/
 ├── .github/
 │   └── workflows/           # GitHub Actions CI/CD
 ├── .pre-commit-config.yaml  # Pre-commit hook configuration
 ├── src/
-│   └── mkdocs_metadata_enricher/
+│   └── mkdocs_metadata_enricher_plugin/
 │       ├── __init__.py      # Version export
 │       ├── plugin.py        # Main plugin code
 │       └── py.typed         # PEP 561 marker
@@ -171,7 +171,7 @@ mkdocs build
 
 Publishing is handled by GitHub Actions using trusted publishing (OIDC). To release:
 
-1. Update version in `src/mkdocs_metadata_enricher/__init__.py`:
+1. Update version in `src/mkdocs_metadata_enricher_plugin/__init__.py`:
    ```python
    __version__ = "0.2.0"
    ```
@@ -192,7 +192,7 @@ Publishing is handled by GitHub Actions using trusted publishing (OIDC). To rele
    - Publishes to PyPI
 
 **Note**: First-time setup requires configuring PyPI trusted publishers:
-- Go to [PyPI project settings](https://pypi.org/manage/project/mkdocs-metadata-enricher/settings/)
+- Go to [PyPI project settings](https://pypi.org/manage/project/mkdocs-metadata-enricher-plugin/settings/)
 - Add a trusted publisher for the GitHub repo with environment name `pypi`
 
 ## Useful Commands
@@ -261,7 +261,7 @@ uv run pytest --pdbcls=IPython.terminal.debugger:TerminalPdb
 
 ## Version Management
 
-Version is stored in a single place: `src/mkdocs_metadata_enricher/__init__.py`
+Version is stored in a single place: `src/mkdocs_metadata_enricher_plugin/__init__.py`
 
 ```python
 __version__ = "0.1.0"
@@ -315,7 +315,7 @@ To improve documentation:
 
 ## Getting Help
 
-- Check existing [GitHub issues](https://github.com/yourusername/mkdocs-metadata-enricher/issues)
+- Check existing [GitHub issues](https://github.com/yourusername/mkdocs-metadata-enricher-plugin/issues)
 - Read the [README](README.md) for usage examples
 - Review test cases in `tests/` for implementation examples
 
