@@ -158,7 +158,7 @@ class MetadataEnricherPlugin(BasePlugin):
                 json.dump(search_index, f, separators=(",", ":"))
 
             log.info(
-                f"MetadataEnricher: Added dates to {modified_count} entries " "in search_index.json"
+                f"MetadataEnricher: Added dates to {modified_count} entries in search_index.json"
             )
 
         except (json.JSONDecodeError, KeyError, OSError) as e:

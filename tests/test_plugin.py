@@ -323,7 +323,6 @@ class TestEdgeCases:
 
     def test_invalid_timezone(self, plugin, docs_dir):
         """Test that invalid timezone logs an error."""
-        filepath = os.path.join(docs_dir, "index.md")
         dt = datetime(2021, 4, 27, 13, 11, 28, tzinfo=ZoneInfo("UTC"))
 
         plugin.config["search_timezone"] = "Invalid/Timezone"
