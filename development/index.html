@@ -868,6 +868,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sitemap-lastmod-looks-like-build-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sitemap &lt;lastmod&gt; looks like build date
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#timezone-issues-in-tests" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1293,6 +1304,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#sitemap-lastmod-looks-like-build-date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sitemap &lt;lastmod&gt; looks like build date
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#timezone-issues-in-tests" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1614,9 +1636,34 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>git<span class="w"> </span>add<span class="w"> </span>tests/fixtures/
 <a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Add test fixtures&quot;</span>
 </code></pre></div></p>
+<h4 id="sitemap-lastmod-looks-like-build-date">Sitemap <code>&lt;lastmod&gt;</code> looks like build date<a class="headerlink" href="#sitemap-lastmod-looks-like-build-date" title="Permanent link">&para;</a></h4>
+<p>If all documentation files were created or last modified in the same commit,
+all pages will legitimately show the same <code>&lt;lastmod&gt;</code> date. To verify per-file
+behavior locally, create a temporary backdated commit for one doc file:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Example: set docs/how-it-works.md to an older commit date</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nv">TARGET</span><span class="o">=</span><span class="s2">&quot;docs/how-it-works.md&quot;</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="nv">BACKDATE</span><span class="o">=</span><span class="s2">&quot;2020-01-02T03:04:05+00:00&quot;</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;\n&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TARGET</span><span class="s2">&quot;</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>git<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TARGET</span><span class="s2">&quot;</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="nv">GIT_AUTHOR_DATE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BACKDATE</span><span class="s2">&quot;</span><span class="w"> </span><span class="nv">GIT_COMMITTER_DATE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BACKDATE</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">    </span>git<span class="w"> </span>commit<span class="w"> </span>--no-verify<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;test: backdate one docs file&quot;</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>.venv/bin/python<span class="w"> </span>-m<span class="w"> </span>mkdocs<span class="w"> </span>build<span class="w"> </span>-v
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="c1"># Inspect that page in sitemap.xml</span>
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>awk<span class="w"> </span><span class="s1">&#39;/how-it-works\//{show=1} show{print} /&lt;\/url&gt;/{if(show){exit}}&#39;</span><span class="w"> </span>site/sitemap.xml
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>
+<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="c1"># Cleanup temporary commit</span>
+<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>HEAD~1
+</code></pre></div>
+<p>Expected result: the targeted page shows the backdated <code>&lt;lastmod&gt;</code>, while other
+pages keep their own latest git-derived date.</p>
+<p>Implementation note: sitemap date enrichment must happen before sitemap
+template rendering, so the plugin sets <code>page.update_date</code> in an early page hook.</p>
 <h4 id="timezone-issues-in-tests">Timezone issues in tests<a class="headerlink" href="#timezone-issues-in-tests" title="Permanent link">&para;</a></h4>
 <p>Tests use UTC and mocked git dates. If tests fail with timezone errors, ensure <code>pytz</code> is installed:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>uv<span class="w"> </span>sync<span class="w"> </span>--all-extras
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>uv<span class="w"> </span>sync<span class="w"> </span>--all-extras
 </code></pre></div></p>
 <h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
 <p>User documentation is in <a href="https://github.com/cms-cat/mkdocs-metadata-enricher-plugin/blob/main/README.md">README.md</a>. This file (DEVELOPMENT.md) covers development setup.</p>
@@ -1677,7 +1724,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 16, 2026 15:08:55 UTC">February 16, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 16, 2026 22:34:49 UTC">February 16, 2026</span>
   </span>
 
     

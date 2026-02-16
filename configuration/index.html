@@ -973,7 +973,8 @@
 </tbody>
 </table>
 <h3 id="search-index-date-formatting">Search Index Date Formatting<a class="headerlink" href="#search-index-date-formatting" title="Permanent link">&para;</a></h3>
-<p>These options control how dates appear in search results when <code>enrich_search: true</code>.</p>
+<p>These options control how dates appear in search results when <code>enrich_search: true</code>.
+They do <strong>not</strong> affect sitemap formatting.</p>
 <table>
 <thead>
 <tr>
@@ -1011,6 +1012,12 @@
 </tbody>
 </table>
 <h4 id="date-format-types">Date format types<a class="headerlink" href="#date-format-types" title="Permanent link">&para;</a></h4>
+<div class="admonition note">
+<p class="admonition-title">Sitemap format is fixed</p>
+</div>
+<p><code>sitemap.xml</code> uses <code>&lt;lastmod&gt;</code> values in <code>YYYY-MM-DD</code> format (for example,
+  <code>2025-04-27</code>) as expected by sitemap consumers. The <code>search_date_type</code>
+  options below apply only to <code>search/search_index.json</code> output.</p>
 <h5 id="iso_date-default"><code>iso_date</code> (default)<a class="headerlink" href="#iso_date-default" title="Permanent link">&para;</a></h5>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>2025-04-27
 </code></pre></div>
@@ -1093,7 +1100,7 @@ revision date plugin sets on each page's metadata.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 16, 2026 09:23:18 UTC">February 16, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 16, 2026 22:34:49 UTC">February 16, 2026</span>
   </span>
 
     
