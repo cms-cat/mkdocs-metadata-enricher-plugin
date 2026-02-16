@@ -107,4 +107,6 @@ def plugin():
         "search_timezone": "UTC",
         "search_locale": "en",
     }
+    # Initialize caches (normally done by on_config hook)
+    plugin.on_config({})
     return plugin

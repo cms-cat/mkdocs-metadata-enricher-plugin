@@ -33,13 +33,30 @@ class MetadataEnricherPlugin(BasePlugin):
         ("search_locale", config_options.Type(str, default="en")),
     )
 
+    def on_config(self, config, **kwargs):
+        """
+        Initialize caches at the start of the build.
+
+        Args:
+            config: MkDocs configuration.
+
+        Returns:
+            The config object (unchanged).
+        """
+        # Cache: src_path -> UTC datetime (populated in on_page_context)
+        self._date_cache = {}
+        # Map: dest_path (output URL) -> src_path (source file)
+        self._path_map = {}
+        return config
+
     def on_page_context(self, context, page, config, nav):
         """
         Inject git date into page context for sitemap enrichment.
 
         This hook reads the git revision date from page.meta (set by
         git-revision-date-localized-plugin) and updates page.update_date,
-        which the default sitemap template respects.
+        which the default sitemap template respects. It also caches
+        the datetime and path mapping for use in on_post_build.
 
         Args:
             context: Page rendering context.
@@ -50,16 +67,31 @@ class MetadataEnricherPlugin(BasePlugin):
         Returns:
             The context object (unchanged).
         """
-        if not self.config["enrich_sitemap"]:
-            return context
+        # Cache the path mapping (dest_path -> src_path) for on_post_build
+        if hasattr(page, "file") and page.file:
+            self._path_map[page.file.dest_path] = page.file.src_path
 
         # Read raw ISO date from git-revision-date-localized-plugin
         git_date = page.meta.get("git_revision_date_localized_raw_iso_date")
 
         if git_date:
-            # Update page.update_date so sitemap uses git date (YYYY-MM-DD only)
-            page.update_date = git_date.split(" ")[0] if " " in git_date else git_date
-            log.debug(f"Updated sitemap date for {page.file.src_path}: {page.update_date}")
+            # Cache the parsed datetime for on_post_build
+            try:
+                dt = datetime.fromisoformat(git_date)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=ZoneInfo("UTC"))
+                else:
+                    dt = dt.astimezone(ZoneInfo("UTC"))
+                self._date_cache[page.file.src_path] = dt
+            except ValueError:
+                log.debug(
+                    f"MetadataEnricher: Could not parse date '{git_date}' for {page.file.src_path}"
+                )
+
+            if self.config["enrich_sitemap"]:
+                # Update page.update_date so sitemap uses git date (YYYY-MM-DD only)
+                page.update_date = git_date.split(" ")[0] if " " in git_date else git_date
+                log.debug(f"Updated sitemap date for {page.file.src_path}: {page.update_date}")
 
         return context
 
@@ -67,9 +99,9 @@ class MetadataEnricherPlugin(BasePlugin):
         """
         Enrich search index with formatted git revision dates after build.
 
-        Reads search_index.json and injects formatted dates based on config.
-        Queries git directly to extract full datetime, independent of
-        git-revision-date-localized-plugin's type setting.
+        Reads search_index.json and injects formatted dates. Uses cached
+        dates from on_page_context when available, falling back to git
+        subprocess for cache misses.
 
         Args:
             config: MkDocs configuration.
@@ -99,11 +131,24 @@ class MetadataEnricherPlugin(BasePlugin):
                 if rel_url.endswith("/"):
                     rel_url += "index.html"
 
-                # Heuristic to find source file
-                src_path_md = rel_url.replace(".html", ".md")
-                full_path = os.path.join(docs_dir, src_path_md)
+                # Resolve source path using cached mapping, fall back to heuristic
+                src_path = self._path_map.get(rel_url)
+                if src_path is None:
+                    # Heuristic fallback
+                    src_path = rel_url.replace(".html", ".md")
+                    log.debug(
+                        f"MetadataEnricher: No path mapping for '{rel_url}', "
+                        f"using heuristic: {src_path}"
+                    )
 
-                formatted_date = self._get_formatted_date(full_path)
+                # Try cached date first, fall back to git subprocess
+                dt = self._date_cache.get(src_path)
+                if dt:
+                    formatted_date = self._format_datetime(dt)
+                else:
+                    full_path = os.path.join(docs_dir, src_path)
+                    formatted_date = self._get_formatted_date(full_path)
+
                 if formatted_date:
                     entry["last_updated"] = formatted_date
                     modified_count += 1
@@ -158,6 +203,8 @@ class MetadataEnricherPlugin(BasePlugin):
         """
         Get formatted git date for search index based on config.
 
+        Fetches the git datetime for the given file and formats it.
+
         Args:
             filepath: Absolute path to the source file.
 
@@ -168,6 +215,18 @@ class MetadataEnricherPlugin(BasePlugin):
         if not dt:
             return None
 
+        return self._format_datetime(dt)
+
+    def _format_datetime(self, dt: datetime) -> Optional[str]:
+        """
+        Format a datetime according to plugin config.
+
+        Args:
+            dt: Timezone-aware datetime object.
+
+        Returns:
+            Formatted date string, or None on error.
+        """
         date_type = self.config["search_date_type"]
         timezone_name = self.config["search_timezone"]
         locale = self.config["search_locale"]
@@ -201,5 +260,5 @@ class MetadataEnricherPlugin(BasePlugin):
             return None
 
         except Exception as e:
-            log.error(f"MetadataEnricher: Error formatting date for {filepath}: {e}")
+            log.error(f"MetadataEnricher: Error formatting date: {e}")
             return None
