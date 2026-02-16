@@ -74,11 +74,20 @@ class MetadataEnricherPlugin(BasePlugin):
 
         # Read raw ISO date from git-revision-date-localized-plugin
         git_date = page.meta.get("git_revision_date_localized_raw_iso_date")
+        git_datetime = page.meta.get("git_revision_date_localized_raw_iso_datetime")
 
-        if git_date:
+        # Use datetime if available for better precision in search, fallback to date
+        raw_date = git_datetime or git_date
+
+        if raw_date:
             # Cache the parsed datetime for on_post_build
             try:
-                dt = datetime.fromisoformat(git_date)
+                # git-revision-date-localized may use space as separator
+                if " " in raw_date and "T" not in raw_date:
+                    dt = datetime.fromisoformat(raw_date.replace(" ", "T"))
+                else:
+                    dt = datetime.fromisoformat(raw_date)
+
                 if dt.tzinfo is None:
                     dt = dt.replace(tzinfo=ZoneInfo("UTC"))
                 else:
@@ -86,10 +95,10 @@ class MetadataEnricherPlugin(BasePlugin):
                 self._date_cache[page.file.src_path] = dt
             except ValueError:
                 log.debug(
-                    f"MetadataEnricher: Could not parse date '{git_date}' for {page.file.src_path}"
+                    f"MetadataEnricher: Could not parse date '{raw_date}' for {page.file.src_path}"
                 )
 
-            if self.config["enrich_sitemap"]:
+            if self.config["enrich_sitemap"] and git_date:
                 # Update page.update_date so sitemap uses git date (YYYY-MM-DD only)
                 page.update_date = git_date.split(" ")[0] if " " in git_date else git_date
                 log.debug(f"Updated sitemap date for {page.file.src_path}: {page.update_date}")

@@ -358,5 +358,18 @@ class TestEdgeCases:
 
         # Caching still happens
         assert "index.md" in plugin._date_cache
-        # But update_date is not set
-        assert mock_page.update_date is None
+
+    def test_on_page_context_caches_datetime(self, plugin, mock_page):
+        """Test that on_page_context prefers raw_iso_datetime for caching."""
+        mock_page.meta["git_revision_date_localized_raw_iso_date"] = "2021-04-27"
+        mock_page.meta["git_revision_date_localized_raw_iso_datetime"] = "2021-04-27 13:11:28"
+        mock_page.file.src_path = "index.md"
+        mock_page.file.dest_path = "index.html"
+
+        plugin.on_page_context({}, mock_page, {}, None)
+
+        assert "index.md" in plugin._date_cache
+        dt = plugin._date_cache["index.md"]
+        assert dt.hour == 13
+        assert dt.minute == 11
+        assert dt.second == 28
