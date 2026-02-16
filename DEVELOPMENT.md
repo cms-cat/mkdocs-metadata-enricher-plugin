@@ -185,12 +185,9 @@ Publishing is automated using GitHub Actions. To release a new version:
     - Merge the PR into `main`.
 
 3.  **Automatic Tagging and Publishing**:
-    - Once the PR is merged, the **Tag Release** workflow triggers.
+    - Once the PR is merged, the **Release** workflow triggers.
     - It creates and pushes a git tag (e.g., `v0.2.0`).
-    - This tag push automatically triggers the **Publish** workflow, which:
-        - Builds the package.
-        - Runs tests.
-        - Publishes to PyPI using trusted publishing.
+    - It also builds the package and publishes it to PyPI using trusted publishing.
 
 **Note**: First-time setup requires configuring PyPI trusted publishers:
 - Go to [PyPI project settings](https://pypi.org/manage/project/mkdocs-metadata-enricher-plugin/settings/)
