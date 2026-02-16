@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 from datetime import datetime
+from pathlib import Path
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
@@ -90,6 +91,9 @@ class TestGitDateExtraction:
         """Test successful git datetime extraction."""
         filepath = os.path.join(docs_dir, "index.md")
 
+        # Create the file so os.path.exists check passes
+        Path(filepath).touch()
+
         with patch("mkdocs_metadata_enricher_plugin.plugin.subprocess.check_output") as mock_cmd:
             mock_cmd.return_value = b"2021-04-27 13:11:28 +0000"
 
@@ -121,7 +125,7 @@ class TestGitDateExtraction:
         """Test handling of empty git result."""
         filepath = os.path.join(docs_dir, "index.md")
 
-        with patch("subprocess.check_output") as mock_cmd:
+        with patch("mkdocs_metadata_enricher_plugin.plugin.subprocess.check_output") as mock_cmd:
             mock_cmd.return_value = b""
 
             result = plugin._get_git_datetime(filepath)

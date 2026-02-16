@@ -6,26 +6,44 @@ repo_name: cms-cat/mkdocs-metadata-enricher-plugin
 
 theme:
   name: material
+  language: en
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: teal
+      accent: teal
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: teal
+      accent: teal
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
   features:
     - navigation.instant
     - navigation.tracking
+    - navigation.tabs
     - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.path
+    - navigation.breadcrumbs
     - content.code.copy
+    - content.code.annotate
     - search.highlight
     - search.suggest
+    - search.share
+  icon:
+    logo: material/metadata
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/cms-cat/mkdocs-metadata-enricher-plugin
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/mkdocs-metadata-enricher-plugin/
 
 plugins:
   - search
@@ -58,6 +76,10 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:pymdownx.emoji.twemoji
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
   - attr_list
   - toc:
       permalink: true
+      baselevel: 2

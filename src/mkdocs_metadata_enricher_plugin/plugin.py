@@ -70,10 +70,7 @@ class MetadataEnricherPlugin(BasePlugin):
         """
         # Cache the path mapping (dest_path -> src_path) for on_post_build
         if hasattr(page, "file") and page.file:
-            dest_path = page.file.dest_path
-            # Normalize root page path for consistent lookup
-            normalized_dest = self._normalize_path(dest_path)
-            self._path_map[normalized_dest] = page.file.src_path
+            self._path_map[page.file.dest_path] = page.file.src_path
 
         # Read raw ISO date from git-revision-date-localized-plugin
         git_date = page.meta.get("git_revision_date_localized_raw_iso_date")
@@ -98,23 +95,6 @@ class MetadataEnricherPlugin(BasePlugin):
                 log.debug(f"Updated sitemap date for {page.file.src_path}: {page.update_date}")
 
         return context
-
-    def _normalize_path(self, path: str) -> str:
-        """
-        Normalize path for consistent cache lookup.
-
-        Ensures empty paths and root index paths are handled consistently
-        for path mapping between on_page_context and on_post_build.
-
-        Args:
-            path: Path to normalize.
-
-        Returns:
-            Normalized path string.
-        """
-        if not path or path == "":
-            return ""
-        return path
 
     def on_post_build(self, config, **kwargs):
         """
@@ -149,24 +129,20 @@ class MetadataEnricherPlugin(BasePlugin):
 
             for entry in search_index.get("docs", []):
                 rel_url = entry["location"].split("#")[0]
-                if rel_url.endswith("/"):
+                if not rel_url or rel_url == "/":
+                    rel_url = "index.html"
+                elif rel_url.endswith("/"):
                     rel_url += "index.html"
 
-                # Normalize path for cache lookup
-                normalized_url = self._normalize_path(rel_url)
-
                 # Resolve source path using cached mapping, fall back to heuristic
-                src_path = self._path_map.get(normalized_url)
+                src_path = self._path_map.get(rel_url)
                 if src_path is None:
-                    # Try looking up with the original path as well
-                    src_path = self._path_map.get(rel_url)
-                    if src_path is None:
-                        # Heuristic fallback
-                        src_path = rel_url.replace(".html", ".md")
-                        log.debug(
-                            f"MetadataEnricher: No path mapping for '{rel_url}', "
-                            f"using heuristic: {src_path}"
-                        )
+                    # Heuristic fallback
+                    src_path = rel_url.replace(".html", ".md")
+                    log.debug(
+                        f"MetadataEnricher: No path mapping for '{rel_url}', "
+                        f"using heuristic: {src_path}"
+                    )
 
                 # Try cached date first, fall back to git subprocess
                 dt = self._date_cache.get(src_path)
