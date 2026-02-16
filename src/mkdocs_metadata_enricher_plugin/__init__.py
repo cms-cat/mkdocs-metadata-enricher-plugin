@@ -1,6 +1,6 @@
 """MkDocs Metadata Enricher Plugin."""
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 from .plugin import MetadataEnricherPlugin
 

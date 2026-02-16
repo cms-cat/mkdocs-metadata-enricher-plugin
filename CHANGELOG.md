@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-02-16
+
+### Fixed
+
+- Set sitemap lastmod before template render
+
 ## [0.3.0] - 2026-02-16
 
 ### Fixed
