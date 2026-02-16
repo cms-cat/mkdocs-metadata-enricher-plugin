@@ -300,6 +300,37 @@ git add tests/fixtures/
 git commit -m "Add test fixtures"
 ```
 
+### Sitemap `<lastmod>` looks like build date
+
+If all documentation files were created or last modified in the same commit,
+all pages will legitimately show the same `<lastmod>` date. To verify per-file
+behavior locally, create a temporary backdated commit for one doc file:
+
+```bash
+# Example: set docs/how-it-works.md to an older commit date
+TARGET="docs/how-it-works.md"
+BACKDATE="2020-01-02T03:04:05+00:00"
+
+printf "\n" >> "$TARGET"
+git add "$TARGET"
+GIT_AUTHOR_DATE="$BACKDATE" GIT_COMMITTER_DATE="$BACKDATE" \
+    git commit --no-verify -m "test: backdate one docs file"
+
+.venv/bin/python -m mkdocs build -v
+
+# Inspect that page in sitemap.xml
+awk '/how-it-works\//{show=1} show{print} /<\/url>/{if(show){exit}}' site/sitemap.xml
+
+# Cleanup temporary commit
+git reset --hard HEAD~1
+```
+
+Expected result: the targeted page shows the backdated `<lastmod>`, while other
+pages keep their own latest git-derived date.
+
+Implementation note: sitemap date enrichment must happen before sitemap
+template rendering, so the plugin sets `page.update_date` in an early page hook.
+
 ### Timezone issues in tests
 
 Tests use UTC and mocked git dates. If tests fail with timezone errors, ensure `pytz` is installed:

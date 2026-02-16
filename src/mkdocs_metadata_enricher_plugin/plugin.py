@@ -50,6 +50,76 @@ class MetadataEnricherPlugin(BasePlugin):
         self._path_map = {}
         return config
 
+    def _process_page_dates(self, page) -> None:
+        """Extract and cache git date metadata for a page.
+
+        This is shared by multiple page hooks to ensure sitemap enrichment
+        happens early enough in the build lifecycle.
+
+        Args:
+            page: MkDocs page object.
+        """
+        # Cache the path mapping (dest_path -> src_path) for on_post_build
+        if hasattr(page, "file") and page.file:
+            self._path_map[page.file.dest_path] = page.file.src_path
+
+        # Read raw ISO date from git-revision-date-localized-plugin
+        git_date = page.meta.get("git_revision_date_localized_raw_iso_date")
+        git_datetime = page.meta.get("git_revision_date_localized_raw_iso_datetime")
+
+        # Use datetime if available for better precision in search, fallback to date
+        raw_date = git_datetime or git_date
+        if not raw_date:
+            return
+
+        src_path = page.file.src_path if hasattr(page, "file") and page.file else None
+        parsed_dt: datetime | None = None
+
+        # Cache the parsed datetime for on_post_build
+        try:
+            # git-revision-date-localized may use space as separator
+            if " " in raw_date and "T" not in raw_date:
+                parsed_dt = datetime.fromisoformat(raw_date.replace(" ", "T"))
+            else:
+                parsed_dt = datetime.fromisoformat(raw_date)
+
+            if parsed_dt.tzinfo is None:
+                parsed_dt = parsed_dt.replace(tzinfo=ZoneInfo("UTC"))
+            else:
+                parsed_dt = parsed_dt.astimezone(ZoneInfo("UTC"))
+
+            if src_path is not None:
+                self._date_cache[src_path] = parsed_dt
+        except ValueError:
+            if src_path is not None:
+                log.debug(f"MetadataEnricher: Could not parse date '{raw_date}' for {src_path}")
+            else:
+                log.debug(f"MetadataEnricher: Could not parse date '{raw_date}'")
+
+        if self.config["enrich_sitemap"]:
+            if parsed_dt is not None:
+                page.update_date = parsed_dt.date().isoformat()
+            else:
+                page.update_date = raw_date.split("T", 1)[0].split(" ", 1)[0]
+
+            if src_path is not None:
+                log.debug(f"Updated sitemap date for {src_path}: {page.update_date}")
+
+    def on_page_markdown(self, markdown, page, config, files):
+        """Process git date metadata early so sitemap.xml gets enriched dates.
+
+        Args:
+            markdown: Page markdown content.
+            page: MkDocs page object.
+            config: MkDocs config.
+            files: MkDocs files collection.
+
+        Returns:
+            The markdown content (unchanged).
+        """
+        self._process_page_dates(page)
+        return markdown
+
     def on_page_context(self, context, page, config, nav):
         """
         Inject git date into page context for sitemap enrichment.
@@ -68,40 +138,7 @@ class MetadataEnricherPlugin(BasePlugin):
         Returns:
             The context object (unchanged).
         """
-        # Cache the path mapping (dest_path -> src_path) for on_post_build
-        if hasattr(page, "file") and page.file:
-            self._path_map[page.file.dest_path] = page.file.src_path
-
-        # Read raw ISO date from git-revision-date-localized-plugin
-        git_date = page.meta.get("git_revision_date_localized_raw_iso_date")
-        git_datetime = page.meta.get("git_revision_date_localized_raw_iso_datetime")
-
-        # Use datetime if available for better precision in search, fallback to date
-        raw_date = git_datetime or git_date
-
-        if raw_date:
-            # Cache the parsed datetime for on_post_build
-            try:
-                # git-revision-date-localized may use space as separator
-                if " " in raw_date and "T" not in raw_date:
-                    dt = datetime.fromisoformat(raw_date.replace(" ", "T"))
-                else:
-                    dt = datetime.fromisoformat(raw_date)
-
-                if dt.tzinfo is None:
-                    dt = dt.replace(tzinfo=ZoneInfo("UTC"))
-                else:
-                    dt = dt.astimezone(ZoneInfo("UTC"))
-                self._date_cache[page.file.src_path] = dt
-            except ValueError:
-                log.debug(
-                    f"MetadataEnricher: Could not parse date '{raw_date}' for {page.file.src_path}"
-                )
-
-            if self.config["enrich_sitemap"] and raw_date:
-                # Update page.update_date so sitemap uses git date (YYYY-MM-DD only)
-                page.update_date = raw_date.split(" ")[0] if " " in raw_date else raw_date
-                log.debug(f"Updated sitemap date for {page.file.src_path}: {page.update_date}")
+        self._process_page_dates(page)
 
         return context
 

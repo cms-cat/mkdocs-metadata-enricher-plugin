@@ -13,6 +13,7 @@ All configuration options for mkdocs-metadata-enricher-plugin live under the
 ## Search Index Date Formatting
 
 These options control how dates appear in search results when `enrich_search: true`.
+They do **not** affect sitemap formatting.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -22,6 +23,11 @@ These options control how dates appear in search results when `enrich_search: tr
 | `search_locale` | `str` | `en` | [Locale code](https://www.mkdocs.org/user-guide/localizing-your-theme/#supported-locales) for date localization |
 
 ### Date format types
+
+!!! note "Sitemap format is fixed"
+  `sitemap.xml` uses `<lastmod>` values in `YYYY-MM-DD` format (for example,
+  `2025-04-27`) as expected by sitemap consumers. The `search_date_type`
+  options below apply only to `search/search_index.json` output.
 
 #### `iso_date` (default)
 

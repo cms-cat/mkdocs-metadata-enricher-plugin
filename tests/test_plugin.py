@@ -80,6 +80,19 @@ class TestSitemapEnrichment:
         # Should still enrich sitemap even though only git_datetime was provided
         assert mock_page.update_date == "2021-04-27"
 
+    def test_on_page_markdown_sets_update_date_early(self, plugin, mock_page):
+        """Test that on_page_markdown sets update_date before sitemap template renders."""
+        mock_page.meta["git_revision_date_localized_raw_iso_datetime"] = "2021-04-27T13:11:28+00:00"
+        mock_page.meta["git_revision_date_localized_raw_iso_date"] = None
+        mock_page.file.src_path = "index.md"
+        mock_page.file.dest_path = "index.html"
+
+        markdown = "# Title"
+        result = plugin.on_page_markdown(markdown, mock_page, {}, None)
+
+        assert result == markdown
+        assert mock_page.update_date == "2021-04-27"
+
     def test_on_page_context_without_git_date(self, plugin, mock_page):
         """Test that page.update_date is not changed if no git date."""
         original_date = None

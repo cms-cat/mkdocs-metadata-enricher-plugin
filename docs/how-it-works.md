@@ -18,29 +18,27 @@ The plugin hooks into two MkDocs build events:
 
 ```mermaid
 graph LR
-    A[MkDocs Build] --> B[on_page_context]
-    B --> C[Cache git dates per page]
-    A --> D[on_post_build]
-    D --> E[Enrich sitemap.xml]
-    D --> F[Enrich search_index.json]
+  A[MkDocs Build] --> B[on_page_markdown]
+  B --> C[Set page.update_date + cache git dates]
+  A --> D[on_post_build]
+  D --> E[Enrich search_index.json]
 ```
 
-### Step 1: Collect git dates (`on_page_context`)
+### Step 1: Set sitemap date early (`on_page_markdown`)
 
 During the build, the plugin reads the git revision date that
 `git-revision-date-localized-plugin` has already extracted and cached for each
-page. It stores this date in an internal cache keyed by page path.
+page. It then updates `page.update_date` immediately (in `YYYY-MM-DD` format),
+which is what MkDocs uses while rendering `sitemap.xml`.
 
-### Step 2: Enrich sitemap (`on_post_build`)
+The plugin also stores the parsed datetime in an internal cache keyed by source
+path for later search index enrichment.
 
-After the build completes, the plugin reads the generated `sitemap.xml` and
-replaces or adds `<lastmod>` entries with the actual git commit dates.
+### Step 2: Enrich search index (`on_post_build`)
 
-### Step 3: Enrich search index (`on_post_build`)
-
-The plugin reads `search/search_index.json` and prepends a formatted date
-string to the `text` field of each search entry. This makes the date visible
-in search results.
+After the build completes, the plugin reads `search/search_index.json` and
+adds a `last_updated` field to each entry. It uses the cached datetime from
+Step 1 and falls back to direct git lookup when needed.
 
 ## Before & After
 
@@ -82,12 +80,12 @@ in search results.
 {
   "location": "getting-started/",
   "title": "Getting Started",
-  "text": "November 3, 2025 14:22:05 — Install and configure the plugin..."
+  "text": "Install and configure the plugin...",
+  "last_updated": "November 3, 2025 14:22:05"
 }
 ```
 
-The date appears as a prefix in the search text, making it visible when users
-search your documentation.
+The date is available as structured metadata in each search entry.
 
 ## Integration with git-revision-date-localized
 
