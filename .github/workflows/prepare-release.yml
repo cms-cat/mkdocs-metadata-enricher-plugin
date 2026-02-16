@@ -69,7 +69,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore(release): prepare for v${{ steps.next_version.outputs.next_version }}"
           branch: "release/v${{ steps.next_version.outputs.next_version }}"
-          title: "release: v${{ steps.next_version.outputs.next_version }}"
+          title: "chore(release): v${{ steps.next_version.outputs.next_version }}"
           body: |
             Automated release preparation for v${{ steps.next_version.outputs.next_version }}.
 

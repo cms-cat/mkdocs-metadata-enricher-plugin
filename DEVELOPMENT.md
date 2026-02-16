@@ -126,6 +126,11 @@ uv run pytest --cov=src/mkdocs_metadata_enricher_plugin
 mkdocs-metadata-enricher-plugin/
 ├── .github/
 │   └── workflows/           # GitHub Actions CI/CD
+│       ├── ci.yml           # Continuous Integration
+│       ├── docs.yml         # Deploy documentation
+│       ├── lint.yml         # PR Title & Code Linting [NEW]
+│       ├── prepare-release.yml
+│       └── release.yml      # Consolidated Release & Publish
 ├── .pre-commit-config.yaml  # Pre-commit hook configuration
 ├── src/
 │   └── mkdocs_metadata_enricher_plugin/
@@ -178,7 +183,7 @@ Publishing is automated using GitHub Actions. To release a new version:
     - This will automatically:
         - Bump the version in `src/mkdocs_metadata_enricher_plugin/__init__.py`.
         - Update `CHANGELOG.md` using `git-cliff`.
-        - Create a new Pull Request titled `release: vX.Y.Z`.
+        - Create a new Pull Request titled `chore(release): vX.Y.Z`.
 
 2.  **Review and Merge**:
     - Review the generated PR and ensuring the changelog looks correct.
