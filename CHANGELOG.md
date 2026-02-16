@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-02-16
+
+### Miscellaneous Tasks
+
+- *(release)* Consolidate tagging and publishing workflows
+
 ## [0.2.0] - 2026-02-16
 
 ### Documentation
