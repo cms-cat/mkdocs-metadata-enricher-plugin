@@ -1,0 +1,81 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Bumping strategy (major, minor, patch)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install git-cliff
+        uses: kenji-miyake/setup-git-cliff@v2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Get current version
+        id: current_version
+        run: |
+          VERSION=$(grep -oP '__version__ = "\K[^"]+' src/mkdocs_metadata_enricher_plugin/__init__.py)
+          echo "current_version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Determine next version
+        id: next_version
+        run: |
+          # Use git-cliff to bump version based on commits or use the input bump
+          # If we want it fully automatic based on commits:
+          # NEXT_VERSION=$(git cliff --bump --version-only)
+          # For more control, we use the input:
+          CURRENT_VERSION=${{ steps.current_version.outputs.current_version }}
+          IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
+          if [ "${{ github.event.inputs.bump }}" == "major" ]; then
+            NEXT_VERSION="$((major + 1)).0.0"
+          elif [ "${{ github.event.inputs.bump }}" == "minor" ]; then
+            NEXT_VERSION="$major.$((minor + 1)).0"
+          else
+            NEXT_VERSION="$major.$minor.$((patch + 1))"
+          fi
+          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update version in code
+        run: |
+          sed -i "s/__version__ = \".*\"/__version__ = \"${{ steps.next_version.outputs.next_version }}\"/" src/mkdocs_metadata_enricher_plugin/__init__.py
+
+      - name: Update Changelog
+        run: |
+          git cliff --tag v${{ steps.next_version.outputs.next_version }} --output CHANGELOG.md
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(release): prepare for v${{ steps.next_version.outputs.next_version }}"
+          branch: "release/v${{ steps.next_version.outputs.next_version }}"
+          title: "release: v${{ steps.next_version.outputs.next_version }}"
+          body: |
+            Automated release preparation for v${{ steps.next_version.outputs.next_version }}.
+
+            This PR:
+            - Bumps version to v${{ steps.next_version.outputs.next_version }}
+            - Updates `CHANGELOG.md`
+
+            Merge this PR to trigger a new release.
+          labels: release

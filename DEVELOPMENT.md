@@ -169,27 +169,28 @@ mkdocs build
 
 ### Publishing to PyPI
 
-Publishing is handled by GitHub Actions using trusted publishing (OIDC). To release:
+Publishing is automated using GitHub Actions. To release a new version:
 
-1. Update version in `src/mkdocs_metadata_enricher_plugin/__init__.py`:
-   ```python
-   __version__ = "0.2.0"
-   ```
+1.  **Trigger Release Preparation**:
+    - Go to the **Actions** tab in GitHub.
+    - Select the **Prepare Release** workflow.
+    - Click **Run workflow** and choose the bumping strategy (patch, minor, or major).
+    - This will automatically:
+        - Bump the version in `src/mkdocs_metadata_enricher_plugin/__init__.py`.
+        - Update `CHANGELOG.md` using `git-cliff`.
+        - Create a new Pull Request titled `release: vX.Y.Z`.
 
-2. Update `CHANGELOG.md` with release notes
+2.  **Review and Merge**:
+    - Review the generated PR and ensuring the changelog looks correct.
+    - Merge the PR into `main`.
 
-3. Commit and tag:
-   ```bash
-   git add .
-   git commit -m "Release version 0.2.0"
-   git tag v0.2.0
-   git push origin main v0.2.0
-   ```
-
-4. GitHub Actions automatically:
-   - Builds the package
-   - Runs tests
-   - Publishes to PyPI
+3.  **Automatic Tagging and Publishing**:
+    - Once the PR is merged, the **Tag Release** workflow triggers.
+    - It creates and pushes a git tag (e.g., `v0.2.0`).
+    - This tag push automatically triggers the **Publish** workflow, which:
+        - Builds the package.
+        - Runs tests.
+        - Publishes to PyPI using trusted publishing.
 
 **Note**: First-time setup requires configuring PyPI trusted publishers:
 - Go to [PyPI project settings](https://pypi.org/manage/project/mkdocs-metadata-enricher-plugin/settings/)
