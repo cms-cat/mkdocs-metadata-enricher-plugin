@@ -35,7 +35,7 @@ theme:
     - search.suggest
     - search.share
   icon:
-    logo: material/metadata
+    logo: material/text-search
     repo: fontawesome/brands/github
 
 extra:
