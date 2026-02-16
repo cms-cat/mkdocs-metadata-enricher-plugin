@@ -6,8 +6,8 @@ import os
 import subprocess
 from datetime import datetime
 from typing import Optional
+from zoneinfo import ZoneInfo
 
-import pytz
 from babel.dates import format_date
 from mkdocs.config import config_options
 from mkdocs.plugins import BasePlugin
@@ -144,9 +144,9 @@ class MetadataEnricherPlugin(BasePlugin):
                 dt = datetime.fromisoformat(result)
                 # Ensure timezone-aware, convert to UTC for consistency
                 if dt.tzinfo is None:
-                    dt = pytz.UTC.localize(dt)
+                    dt = dt.replace(tzinfo=ZoneInfo("UTC"))
                 else:
-                    dt = dt.astimezone(pytz.UTC)
+                    dt = dt.astimezone(ZoneInfo("UTC"))
                 return dt
 
             return None
@@ -174,7 +174,7 @@ class MetadataEnricherPlugin(BasePlugin):
 
         try:
             # Convert to target timezone
-            tz = pytz.timezone(timezone_name)
+            tz = ZoneInfo(timezone_name)
             dt_local = dt.astimezone(tz)
 
             if date_type == "iso_date":

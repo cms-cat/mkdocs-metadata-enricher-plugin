@@ -4,9 +4,9 @@ import json
 import os
 from datetime import datetime
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
 import pytest
-import pytz
 
 from mkdocs_metadata_enricher_plugin.plugin import MetadataEnricherPlugin
 
@@ -136,7 +136,7 @@ class TestDateFormatting:
     def test_format_iso_date(self, mock_git, plugin, docs_dir):
         """Test iso_date format."""
         filepath = os.path.join(docs_dir, "index.md")
-        dt = pytz.UTC.localize(datetime(2021, 4, 27, 13, 11, 28))
+        dt = datetime(2021, 4, 27, 13, 11, 28, tzinfo=ZoneInfo("UTC"))
         mock_git.return_value = dt
 
         plugin.config["search_date_type"] = "iso_date"
@@ -148,7 +148,7 @@ class TestDateFormatting:
     def test_format_iso_datetime(self, mock_git, plugin, docs_dir):
         """Test iso_datetime format."""
         filepath = os.path.join(docs_dir, "index.md")
-        dt = pytz.UTC.localize(datetime(2021, 4, 27, 13, 11, 28))
+        dt = datetime(2021, 4, 27, 13, 11, 28, tzinfo=ZoneInfo("UTC"))
         mock_git.return_value = dt
 
         plugin.config["search_date_type"] = "iso_datetime"
@@ -160,7 +160,7 @@ class TestDateFormatting:
     def test_format_custom(self, mock_git, plugin, docs_dir):
         """Test custom format."""
         filepath = os.path.join(docs_dir, "index.md")
-        dt = pytz.UTC.localize(datetime(2021, 4, 27, 13, 11, 28))
+        dt = datetime(2021, 4, 27, 13, 11, 28, tzinfo=ZoneInfo("UTC"))
         mock_git.return_value = dt
 
         plugin.config["search_date_type"] = "custom"
@@ -173,7 +173,7 @@ class TestDateFormatting:
     def test_format_date_localized(self, mock_git, plugin, docs_dir):
         """Test date format with localization."""
         filepath = os.path.join(docs_dir, "index.md")
-        dt = pytz.UTC.localize(datetime(2021, 4, 27, 13, 11, 28))
+        dt = datetime(2021, 4, 27, 13, 11, 28, tzinfo=ZoneInfo("UTC"))
         mock_git.return_value = dt
 
         plugin.config["search_date_type"] = "date"
@@ -186,7 +186,7 @@ class TestDateFormatting:
     def test_format_datetime_localized(self, mock_git, plugin, docs_dir):
         """Test datetime format with localization."""
         filepath = os.path.join(docs_dir, "index.md")
-        dt = pytz.UTC.localize(datetime(2021, 4, 27, 13, 11, 28))
+        dt = datetime(2021, 4, 27, 13, 11, 28, tzinfo=ZoneInfo("UTC"))
         mock_git.return_value = dt
 
         plugin.config["search_date_type"] = "datetime"
@@ -200,7 +200,7 @@ class TestDateFormatting:
         """Test date formatting with timezone conversion."""
         filepath = os.path.join(docs_dir, "index.md")
         # UTC datetime
-        dt = pytz.UTC.localize(datetime(2021, 4, 27, 2, 0, 0))
+        dt = datetime(2021, 4, 27, 2, 0, 0, tzinfo=ZoneInfo("UTC"))
         mock_git.return_value = dt
 
         plugin.config["search_date_type"] = "iso_datetime"
